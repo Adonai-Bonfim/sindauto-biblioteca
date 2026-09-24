@@ -8,20 +8,22 @@ type LibraryContextValue = {
   returnBook: (id: string) => void;
 };
 
-const initialLoan: Loan = {
+const demoBook = books.find((book) => book.id === "inteligencia-emocional");
+
+const initialLoan: Loan | undefined = demoBook ? {
   id: "loan-demo",
-  book: books[2],
+  book: demoBook,
   checkoutDate: "01/10/2026",
   checkoutTime: "09:15",
   dueDate: "08/10/2026",
   status: "ativo",
   renewed: false,
-};
+} : undefined;
 
 const LibraryContext = createContext<LibraryContextValue | undefined>(undefined);
 
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [loans, setLoans] = useState<Loan[]>([initialLoan]);
+  const [loans, setLoans] = useState<Loan[]>(initialLoan ? [initialLoan] : []);
 
   const value = useMemo<LibraryContextValue>(() => ({
     loans,

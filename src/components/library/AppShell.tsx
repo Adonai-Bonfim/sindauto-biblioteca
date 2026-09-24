@@ -1,11 +1,12 @@
-import { Bell, BookOpen, Books, House, UserRound } from "lucide-react";
+import { Bell, BookOpen, LibraryBig, House, UserRound } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { to: "/", label: "Início", icon: House },
   { to: "/catalogo", label: "Catálogo", icon: BookOpen },
-  { to: "/meus-livros", label: "Meus livros", icon: Books },
+  { to: "/meus-livros", label: "Meus livros", icon: LibraryBig },
   { to: "/perfil", label: "Perfil", icon: UserRound },
 ] as const;
 
@@ -25,9 +26,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="bg-primary text-primary-foreground">
         <div className="mx-auto grid h-20 max-w-app grid-cols-[minmax(0,1fr)_auto] items-center px-4 sm:px-6 lg:px-8">
           <Brand />
-          <button type="button" aria-label="Notificações" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-foreground/14 transition-colors hover:bg-primary-foreground/22">
+          <Button type="button" aria-label="Notificações" size="icon" variant="ghost" className="h-10 w-10 shrink-0 rounded-full bg-primary-foreground/14 text-primary-foreground hover:bg-primary-foreground/22 hover:text-primary-foreground">
             <Bell size={19} />
-          </button>
+          </Button>
         </div>
       </header>
       <main className="mx-auto max-w-app px-4 py-6 sm:px-6 md:py-8 lg:px-8">{children}</main>
