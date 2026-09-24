@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, CalendarDays, RotateCcw, Search, Undo2 } from "lu
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import type { Book, Loan } from "@/lib/library-data";
+import { useLibrary } from "./LibraryProvider";
 
 export function PageIntro({ title = "Biblioteca Sindauto", subtitle = "Olá! Escolha seu próximo livro" }: { title?: string; subtitle?: string }) {
   return (
@@ -49,6 +50,7 @@ export function SectionHeading({ title, to }: { title: string; to?: "/catalogo" 
 }
 
 export function BookCard({ book }: { book: Book }) {
+  const { ready } = useLibrary();
   const available = book.status === "Disponível";
   return (
     <article className="grid min-w-0 grid-cols-[72px_minmax(0,1fr)] gap-3 rounded-card border border-border bg-card p-2.5 shadow-card sm:grid-cols-[88px_minmax(0,1fr)] sm:p-3">
@@ -58,7 +60,7 @@ export function BookCard({ book }: { book: Book }) {
         <p className="mt-1 truncate text-[11px] text-muted-foreground">{book.author}</p>
         <span className={`mt-2 inline-flex w-fit max-w-full items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${available ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}>
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${available ? "bg-success" : "bg-danger"}`} />
-          <span className="truncate">{available ? "Disponível" : `Emprestado até ${book.availableAgain}`}</span>
+          <span className="whitespace-normal">{!ready ? "Consultando…" : available ? "Disponível" : `Emprestado até ${book.availableAgain}`}</span>
         </span>
         <Button asChild size="sm" className="mt-auto h-9 w-full rounded-lg px-2 text-xs shadow-none">
           <Link to="/livros/$bookId" params={{ bookId: book.id }}>Ver livro <ArrowRight size={14} /></Link>
@@ -69,6 +71,7 @@ export function BookCard({ book }: { book: Book }) {
 }
 
 export function LoanCard({ loan, onRenew, onReturn }: { loan: Loan; onRenew: () => void; onReturn: () => void }) {
+  const { busy, ready } = useLibrary();
   return (
     <article className="grid gap-4 rounded-card border border-border bg-card p-3 shadow-card sm:grid-cols-[88px_minmax(0,1fr)_auto] sm:items-center">
       <div className="grid grid-cols-[68px_minmax(0,1fr)] gap-3 sm:contents">
@@ -83,8 +86,8 @@ export function LoanCard({ loan, onRenew, onReturn }: { loan: Loan; onRenew: () 
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:w-28 sm:grid-cols-1">
-        <Button variant="outline" size="sm" onClick={onRenew} disabled={loan.renewed} className="rounded-lg"><RotateCcw />{loan.renewed ? "Renovado" : "Renovar"}</Button>
-        <Button variant="outline" size="sm" onClick={onReturn} className="rounded-lg border-primary text-primary hover:bg-danger-soft"><Undo2 />Devolver</Button>
+        <Button variant="outline" size="sm" onClick={onRenew} disabled={loan.renewed || loan.status === "devolvido" || busy || !ready} className="rounded-lg"><RotateCcw />{loan.renewed ? "Renovado" : "Renovar"}</Button>
+        <Button variant="outline" size="sm" onClick={onReturn} disabled={loan.status === "devolvido" || busy || !ready} className="rounded-lg border-primary text-primary hover:bg-danger-soft"><Undo2 />{loan.status === "devolvido" ? "Devolvido" : "Devolver"}</Button>
       </div>
     </article>
   );

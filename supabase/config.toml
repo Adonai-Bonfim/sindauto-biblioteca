@@ -1,1 +1,5 @@
 project_id = "ljxcthweayezvnudghho"
+
+[auth.sms]
+enable_signup = true
+enable_confirmations = false

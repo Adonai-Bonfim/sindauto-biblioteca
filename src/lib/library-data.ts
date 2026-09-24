@@ -9,7 +9,7 @@ export type Book = {
   author: string;
   category: string;
   status: "Disponível" | "Emprestado";
-  availableAgain?: string;
+  availableAgain?: string | undefined;
   description: string;
   cover: string;
 };
@@ -40,8 +40,7 @@ export const books: Book[] = [
     title: "Inteligência Emocional",
     author: "Daniel Goleman",
     category: "Desenvolvimento",
-    status: "Emprestado",
-    availableAgain: "08/10",
+    status: "Disponível",
     description: "Uma exploração prática de como reconhecer e conduzir as emoções no trabalho e na vida.",
     cover: emocional,
   },

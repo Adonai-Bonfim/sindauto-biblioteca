@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LibraryProvider } from "@/components/library/LibraryProvider";
+import { AuthProvider } from "@/components/library/AuthProvider";
 
 function NotFoundComponent() {
   return (
@@ -102,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -119,9 +120,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LibraryProvider>
+      <AuthProvider><LibraryProvider>
         <Outlet />
-      </LibraryProvider>
+      </LibraryProvider></AuthProvider>
     </QueryClientProvider>
   );
 }
