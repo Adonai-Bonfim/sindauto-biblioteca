@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("Liderança");
+  const [category, setCategory] = useState("Todos");
   const { loans, renew, returnBook } = useLibrary();
   const filtered = useMemo(() => books.filter((book) => {
     const matchesSearch = `${book.title} ${book.author}`.toLowerCase().includes(search.toLowerCase());
@@ -45,7 +45,7 @@ function Index() {
         </div>
       </section>
       <SearchBar value={search} onChange={setSearch} />
-      <CategoryFilter categories={categories.slice(1)} active={category} onChange={setCategory} />
+      <CategoryFilter categories={categories} active={category} onChange={setCategory} />
       <section className="mt-1">
         <SectionHeading title="Livros disponíveis" to="/catalogo" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">{filtered.map((book) => <BookCard key={book.id} book={book} />)}</div>
