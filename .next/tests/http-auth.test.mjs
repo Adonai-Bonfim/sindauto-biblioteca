@@ -58,7 +58,7 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
       assert.equal(denied.ok, false);
       assert.equal(denied.history, undefined);
     }
-    const book = { title: "Livro HTTP", author: "Teste", category: "Teste", description: "", cover: "", quantity: 1 };
+    const book = { title: "Livro HTTP", author: "Teste", category: "Teste", description: "", cover: "/books/habitos-atomicos.jpg", quantity: 1 };
     assert.equal((await call("saveBook", { book })).result.ok, false);
     assert.equal((await call("saveBook", { book }, readerCookie)).result.ok, false);
     const saved = await call("saveBook", { book }, cookie);
@@ -77,6 +77,7 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     assert.equal(history.history.records[0].id, borrowed.id);
     assert.equal(history.history.records[0].person, "Teste HTTP");
     assert.equal(history.history.records[0].title, book.title);
+    assert.equal(history.history.records[0].cover, book.cover);
     assert.equal(history.history.records[0].daysRemaining, 15);
     assert.equal(history.history.records[0].status, "em-dia");
     assert.doesNotMatch(JSON.stringify(history), /password|salt|token_hash/);
@@ -101,6 +102,17 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     assert.equal(archived.status, "devolvido");
     assert.equal(archived.bookRemoved, true);
     assert.ok(archived.returnedAt);
+    await stop();
+    await start();
+    const persistedUser = (await call("readPrototypeLoans", undefined, winnerCookie, "GET")).result.loans[0];
+    const persistedAdmin = (await call("readAdminHistory", undefined, cookie, "GET")).result.history.records[0];
+    assert.equal(persistedUser.id, borrowed.id);
+    assert.equal(persistedAdmin.id, persistedUser.id);
+    assert.equal(persistedUser.status, "devolvido");
+    assert.equal(persistedAdmin.returnedAt, persistedUser.returnedAt);
+    assert.equal(persistedAdmin.cover, book.cover);
+    assert.equal(persistedUser.book.cover, book.cover);
+    assert.equal((await call("readPrototypeLoans", undefined, loserCookie, "GET")).result.loans.length, 0);
     assert.equal((await call("readSession", undefined, cookie, "GET")).result.id, id);
     const second = await call("loginUser", { phone: account.phone, password: account.password });
     assert.equal(second.result.user.id, id);

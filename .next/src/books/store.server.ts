@@ -100,15 +100,15 @@ export class LibraryStore {
   }
   adminHistory(now = new Date()) {
     const rows = this.db.prepare(`SELECT l.*, u.first_name, u.last_name, u.phone, u.department,
-      b.title, b.author, b.removed_at AS book_removed_at
+      b.title, b.author, b.cover, b.removed_at AS book_removed_at
       FROM loans l JOIN users u ON u.id=l.user_id JOIN books b ON b.id=l.book_id
       ORDER BY l.created_at DESC, l.rowid DESC`).all() as Array<LoanRow & {
         first_name: string; last_name: string; phone: string; department: string;
-        title: string; author: string; book_removed_at: string | null;
+        title: string; author: string; cover: string; book_removed_at: string | null;
       }>;
     return { generatedAt: now.toISOString(), records: rows.map(row => ({
       id: row.id, person: `${row.first_name} ${row.last_name}`, phone: row.phone, department: row.department,
-      title: row.title, author: row.author, bookRemoved: Boolean(row.book_removed_at),
+      title: row.title, author: row.author, cover: row.cover, bookRemoved: Boolean(row.book_removed_at),
       checkoutDate: row.checkout_date, checkoutISO: row.checkout_date.split("/").reverse().join("-"), checkoutTime: row.checkout_time,
       dueDate: displayDate(row.due_iso), dueISO: row.due_iso, returnedAt: row.returned_at,
       renewed: Boolean(row.renewed), ...loanProgress(row.due_iso, row.returned_at, now),
