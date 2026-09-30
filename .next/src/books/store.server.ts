@@ -5,6 +5,7 @@ import { mkdirSync } from "node:fs";
 import { bookInput, type BookInput, type StoredBook } from "./schema.ts";
 import { initialBooks } from "./seed.ts";
 import { loanDates } from "../../../src/lib/prototype-loans.ts";
+import { loanProgress } from "../history/status.ts";
 
 type BookRow = BookInput & { id: string; revision: number; active_count: number; next_due: string | null };
 type LoanRow = { id: string; user_id: string; book_id: string; checkout_date: string; checkout_time: string; due_iso: string; returned_at: string | null; renewed: number };
@@ -95,6 +96,22 @@ export class LibraryStore {
       id: row.id, bookId: row.book_id, book: historyBooks.get(row.book_id)!, checkoutDate: row.checkout_date, checkoutTime: row.checkout_time,
       dueDate: displayDate(row.due_iso), returnedAt: row.returned_at, renewed: Boolean(row.renewed),
       status: row.returned_at ? "devolvido" as const : row.renewed ? "renovado" as const : "ativo" as const,
+    })) };
+  }
+  adminHistory(now = new Date()) {
+    const rows = this.db.prepare(`SELECT l.*, u.first_name, u.last_name, u.phone, u.department,
+      b.title, b.author, b.removed_at AS book_removed_at
+      FROM loans l JOIN users u ON u.id=l.user_id JOIN books b ON b.id=l.book_id
+      ORDER BY l.created_at DESC, l.rowid DESC`).all() as Array<LoanRow & {
+        first_name: string; last_name: string; phone: string; department: string;
+        title: string; author: string; book_removed_at: string | null;
+      }>;
+    return { generatedAt: now.toISOString(), records: rows.map(row => ({
+      id: row.id, person: `${row.first_name} ${row.last_name}`, phone: row.phone, department: row.department,
+      title: row.title, author: row.author, bookRemoved: Boolean(row.book_removed_at),
+      checkoutDate: row.checkout_date, checkoutISO: row.checkout_date.split("/").reverse().join("-"), checkoutTime: row.checkout_time,
+      dueDate: displayDate(row.due_iso), dueISO: row.due_iso, returnedAt: row.returned_at,
+      renewed: Boolean(row.renewed), ...loanProgress(row.due_iso, row.returned_at, now),
     })) };
   }
   change(userId: string, action: "borrow" | "renew" | "return", id: string, now = new Date()) {

@@ -21,7 +21,8 @@ livros, estoque, empréstimos e histórico são persistidos em SQLite, sem Supab
 - Manter o livro visível com a data prevista enquanto estiver emprestado.
 - Liberar o exemplar somente quando a devolução for registrada.
 - Preservar o histórico em banco persistente, inclusive após reiniciar o servidor.
-- Cada usuário consulta apenas seus próprios empréstimos.
+- Cada usuário comum consulta apenas seus próprios empréstimos.
+- Administradores consultam todos os registros na aba Acompanhamento, com autorização verificada no servidor.
 
 ## Uso e administração
 
@@ -35,6 +36,12 @@ node .next/scripts/admin.mjs TELEFONE_COM_DDD
 Depois, entre com esse telefone e abra **Perfil → Gerenciar livros e estoque**
 (rota `/admin`). O telefone pode ser autorizado antes do cadastro. Nenhuma senha
 é criada automaticamente, e o privilégio fica salvo no banco.
+
+Na aba **Acompanhamento**, consulte colaborador, setor, telefone, livro, data e
+horário da retirada, prazo restante, atrasos, renovação e devolução registrada.
+Há busca, filtros por situação e período de retirada e paginação. Os registros
+atualizam a cada 15 segundos; datas e prazos seguem o calendário de Brasília.
+O histórico inclui livros removidos e permanece após reiniciar o servidor.
 
 As contas antigas da simulação no navegador não são importadas automaticamente.
 Cadastre o telefone uma vez no backend; depois use-o em qualquer dispositivo
@@ -67,7 +74,7 @@ bun run test:backend
 Os testes do backend usam bancos temporários e a porta 3198. Verificam cadastro,
 sessão após reinício, acesso de outro dispositivo, permissões, estoque e histórico.
 Execute o build antes de `test:backend`. Use HTTPS na hospedagem. Recuperação de
-senha e painel global de histórico administrativo não fazem parte desta etapa.
+senha não faz parte desta etapa.
 
 Esta pasta é código-fonte próprio deste projeto Vite/TanStack. Não executar
 Next.js usando este mesmo diretório de saída, pois ele pode sobrescrever `.next`.

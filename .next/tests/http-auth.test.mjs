@@ -53,6 +53,11 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     const reader = await call("registerUser", { ...account, phone: "71988888888" });
     assert.equal(reader.result.user.isAdmin, false);
     const readerCookie = reader.cookie.split(";")[0];
+    for (const deniedCookie of ["", readerCookie]) {
+      const denied = (await call("readAdminHistory", undefined, deniedCookie, "GET")).result;
+      assert.equal(denied.ok, false);
+      assert.equal(denied.history, undefined);
+    }
     const book = { title: "Livro HTTP", author: "Teste", category: "Teste", description: "", cover: "", quantity: 1 };
     assert.equal((await call("saveBook", { book })).result.ok, false);
     assert.equal((await call("saveBook", { book }, readerCookie)).result.ok, false);
@@ -66,6 +71,15 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     const winnerCookie = race[0].result.ok ? cookie : readerCookie;
     const loserCookie = race[0].result.ok ? readerCookie : cookie;
     const borrowed = race.find(item => item.result.ok).result.snapshot.loans[0];
+    const history = (await call("readAdminHistory", undefined, cookie, "GET")).result;
+    assert.equal(history.ok, true);
+    assert.equal(history.history.records.length, 1);
+    assert.equal(history.history.records[0].id, borrowed.id);
+    assert.equal(history.history.records[0].person, "Teste HTTP");
+    assert.equal(history.history.records[0].title, book.title);
+    assert.equal(history.history.records[0].daysRemaining, 15);
+    assert.equal(history.history.records[0].status, "em-dia");
+    assert.doesNotMatch(JSON.stringify(history), /password|salt|token_hash/);
     assert.equal((await call("removeBook", { id: bookId, revision: 1 }, cookie)).result.ok, false);
     const otherView = (await call("readPrototypeLoans", undefined, loserCookie, "GET")).result;
     assert.equal(otherView.books.find(book => book.id === bookId).status, "Emprestado");
@@ -83,6 +97,10 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     const removedView = (await call("readPrototypeLoans", undefined, winnerCookie, "GET")).result;
     assert.equal(removedView.books.some(book => book.id === bookId), false);
     assert.equal(removedView.loans[0].book.title, book.title);
+    const archived = (await call("readAdminHistory", undefined, cookie, "GET")).result.history.records[0];
+    assert.equal(archived.status, "devolvido");
+    assert.equal(archived.bookRemoved, true);
+    assert.ok(archived.returnedAt);
     assert.equal((await call("readSession", undefined, cookie, "GET")).result.id, id);
     const second = await call("loginUser", { phone: account.phone, password: account.password });
     assert.equal(second.result.user.id, id);

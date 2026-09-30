@@ -6,6 +6,8 @@ import { PageIntro } from "@/components/library/LibraryComponents";
 import { useAuth } from "@/components/library/AuthProvider";
 import { useLibrary } from "@/components/library/LibraryProvider";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AdminLoanHistory } from "@/components/library/AdminLoanHistory";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,6 +60,10 @@ function AdminPage() {
   if (!user.isAdmin) return <AppShell><PageIntro title="Administração" subtitle="Acesso restrito" /><p className="rounded-card border bg-card p-6">O cadastro e a edição de livros são feitos pelo administrador da biblioteca.</p></AppShell>;
   const filtered = books.filter(book => (book.title + " " + book.author).toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR")));
   return <AppShell>
+    <Tabs defaultValue="inventory">
+    <TabsList className="mb-6"><TabsTrigger value="inventory">Acervo</TabsTrigger><TabsTrigger value="history">Acompanhamento</TabsTrigger></TabsList>
+    <TabsContent value="history"><AdminLoanHistory /></TabsContent>
+    <TabsContent value="inventory">
     <Dialog open={Boolean(removing)} onOpenChange={value => { if (!value && !deleting) setRemoving(null); }}><DialogContent className="rounded-card"><DialogHeader><DialogTitle>Remover livro?</DialogTitle><DialogDescription>O livro “{removing?.title}” e seus exemplares sairão do catálogo. O histórico de empréstimos será mantido.</DialogDescription></DialogHeader>{removeError && <p role="alert" className="rounded-lg bg-danger-soft p-3 text-sm text-primary">{removeError}</p>}<div className="flex justify-end gap-2"><Button variant="outline" disabled={deleting} onClick={() => setRemoving(null)}>Cancelar</Button><Button variant="destructive" disabled={deleting} onClick={confirmRemove}>{deleting ? "Removendo…" : "Confirmar remoção"}</Button></div></DialogContent></Dialog>
     <div className="flex flex-wrap items-start justify-between gap-3"><PageIntro title="Gerenciar acervo" subtitle="Cadastre livros e acompanhe os exemplares" /><Button className="h-11 rounded-xl" onClick={() => edit(null)}><Plus size={18} />Cadastrar livro</Button></div>
     <div className="mb-5 grid grid-cols-3 gap-3">{[["Títulos", books.length], ["Exemplares", books.reduce((sum, b) => sum + b.quantity, 0)], ["Disponíveis", books.reduce((sum, b) => sum + b.availableCount, 0)]].map(([label, count]) => <div key={label} className="rounded-xl border bg-card p-3"><span className="text-xs text-muted-foreground">{label}</span><strong className="block text-2xl text-primary">{ready ? count : "…"}</strong></div>)}</div>
@@ -74,5 +80,6 @@ function AdminPage() {
         <div className="space-y-2"><Label htmlFor="book-cover">Endereço da capa (opcional)</Label><Input id="book-cover" name="cover" inputMode="url" placeholder="https://..." maxLength={2048} defaultValue={editing?.cover === "/books/placeholder.svg" ? "" : editing?.cover} /><p className="text-xs text-muted-foreground">Sem imagem, será usada a capa padrão da biblioteca.</p></div>
       </fieldset>{error && <p role="alert" className="rounded-lg bg-danger-soft p-3 text-sm text-primary">{error}</p>}<div className="flex justify-end gap-2"><Button type="button" variant="outline" disabled={saving} onClick={() => setOpen(false)}>Cancelar</Button><Button type="submit" disabled={saving}>{saving ? <LoaderCircle className="animate-spin" size={18} /> : <BookOpen size={18} />}{saving ? "Salvando…" : "Salvar livro"}</Button></div></form>
     </DialogContent></Dialog>
+    </TabsContent></Tabs>
   </AppShell>;
 }
