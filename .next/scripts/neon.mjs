@@ -17,7 +17,7 @@ try {
     if (!process.env.DATABASE_URL) throw new Error("Configure DATABASE_URL no arquivo .env.local.");
     connection = postgresDatabase(process.env.DATABASE_URL);
     await initializeDatabase(connection.database);
-    await importLocalData(connection.database, data);
+    await importLocalData(connection.database, data, process.argv.includes("--preserve-online-users"));
     console.log("Migração concluída. Senhas e histórico preservados. Entre novamente no site para criar uma nova sessão.");
   } else if (command === "check" || command === "admin") {
     if (!process.env.DATABASE_URL) throw new Error("Configure DATABASE_URL no arquivo .env.local.");

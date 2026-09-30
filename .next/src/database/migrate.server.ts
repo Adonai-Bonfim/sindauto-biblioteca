@@ -27,17 +27,25 @@ export function readLocalData(path: string) {
     return data;
   } finally { sqlite.close(); }
 }
-export async function importLocalData(database: SqlDatabase, data: ReturnType<typeof readLocalData>) {
+export async function importLocalData(database: SqlDatabase, data: ReturnType<typeof readLocalData>, preserveOnlineUsers = false) {
   await database.transaction(async client => {
-    for (const table of [...Object.keys(columns), "sessions", "login_attempts"]) {
+    const emptyTables = preserveOnlineUsers ? ["books", "loans"] : [...Object.keys(columns), "sessions", "login_attempts"];
+    for (const table of emptyTables) {
       if ((await client.query(`SELECT 1 FROM ${table} LIMIT 1`)).rows.length) {
         throw new Error("O banco de destino já contém dados. Migração cancelada para não sobrescrever registros.");
       }
     }
+    const userIds = new Map<unknown, unknown>();
     for (const table of Object.keys(columns) as Table[]) {
       const fields = columns[table];
       for (const row of data[table]) {
-        await client.query(`INSERT INTO ${table}(${fields.join(",")}) VALUES(${fields.map((_, i) => `$${i + 1}`).join(",")})`, fields.map(field => row[field]));
+        if (preserveOnlineUsers && table === "users") {
+          const existing = (await client.query("SELECT id FROM users WHERE phone=$1", [row["phone"]])).rows[0];
+          if (existing) { userIds.set(row["id"], existing.id); continue; }
+        }
+        const mapped = table === "loans" ? { ...row, user_id: userIds.get(row["user_id"]) ?? row["user_id"] } : row;
+        const conflict = preserveOnlineUsers && table === "admin_phones" ? " ON CONFLICT(phone) DO NOTHING" : "";
+        await client.query(`INSERT INTO ${table}(${fields.join(",")}) VALUES(${fields.map((_, i) => `$${i + 1}`).join(",")})${conflict}`, fields.map(field => mapped[field]));
       }
     }
   });

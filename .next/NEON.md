@@ -33,6 +33,13 @@ O SQLite original é aberto somente para leitura e permanece no computador.
 A importação acontece em uma transação; uma falha desfaz todas as inserções.
 Uma segunda execução com destino preenchido é recusada, sem sobrescrever dados.
 
+Se o Neon já tiver contas, mas ainda não tiver livros nem empréstimos, use
+`bun run db:migrate --apply --preserve-online-users`. Nesse modo, contas com o
+mesmo telefone mantêm sua senha, seus dados e suas sessões online. O histórico
+local é vinculado ao ID da conta online, e os administradores locais são
+preservados. Livros ou empréstimos existentes no destino continuam bloqueando
+a importação para evitar duplicação ou sobrescrita.
+
 Para outra conta de administrador, cadastre-a primeiro e execute:
 
 ```sh

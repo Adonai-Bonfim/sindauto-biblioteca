@@ -11,6 +11,31 @@ import { AuthStore } from "../src/auth/store.server.ts";
 import { LibraryStore } from "../src/books/store.server.ts";
 import { readLocalData, importLocalData } from "../src/database/migrate.server.ts";
 
+test("importação preserva conta online e remapeia o histórico pelo telefone", { timeout: 60_000 }, async () => {
+  const pg = new PGlite();
+  try {
+    const db = { query: (sql, args) => pg.query(sql, args), transaction: work => pg.transaction(work) };
+    await initializeDatabase(db);
+    const auth = new PostgresAuthStore(db);
+    const account = await auth.register("+5571999999999", "SenhaOnline123!", { first_name: "Online", last_name: "Teste", name: "Online Teste", department: "Teste" });
+    const session = await auth.createSession(account.id);
+    const data = {
+      users: [{ id: "local-user", phone: account.phone, first_name: "Local", last_name: "Teste", department: "Local", salt: "local-salt", password_hash: "local-hash", created_at: "2026-09-30" }],
+      books: [{ id: "book", title: "Teste", author: "Autor", category: "Teste", description: "", cover: "/books/placeholder.svg", quantity: 1, revision: 1, removed_at: null }],
+      loans: [{ id: "loan", user_id: "local-user", book_id: "book", checkout_date: "30/09/2026", checkout_time: "12:00", due_iso: "2026-10-15", returned_at: null, renewed: 0, created_at: "2026-09-30" }],
+      admin_phones: [{ phone: account.phone }],
+    };
+    await importLocalData(db, data, true);
+    assert.equal((await auth.login(account.phone, "SenhaOnline123!")).id, account.id);
+    assert.equal((await auth.getUser(session)).isAdmin, true);
+    assert.equal((await auth.getUser(session)).user_metadata.first_name, "Online");
+    assert.equal((await new PostgresLibraryStore(db).snapshot(account.id)).loans[0].id, "loan");
+    assert.equal((await pg.query("SELECT COUNT(*)::int AS count FROM users")).rows[0].count, 1);
+    assert.equal(data.loans[0].user_id, "local-user");
+    await assert.rejects(importLocalData(db, data, true), /já contém dados/);
+  } finally { await pg.close(); }
+});
+
 test("PostgreSQL: migração preserva senha, administrador, livros e histórico; estoque e sessões", { timeout: 60_000 }, async () => {
   const folder = mkdtempSync(join(tmpdir(), "sindauto-neon-"));
   const file = join(folder, "test.sqlite");
