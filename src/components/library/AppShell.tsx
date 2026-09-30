@@ -13,7 +13,7 @@ const navItems = [
 export function Brand() {
   return (
     <div className="min-w-0 pr-3">
-      <img src="/logo-sindauto.png" alt="Sindauto Bahia" width={230} height={77} className="h-auto max-h-14 w-40 max-w-full rounded bg-white object-contain sm:w-[167px]" />
+      <img src="/logo-sindauto.png" alt="Sindauto Bahia" width={230} height={77} className="h-auto max-h-14 w-40 max-w-full object-contain sm:w-[167px]" />
     </div>
   );
 }
