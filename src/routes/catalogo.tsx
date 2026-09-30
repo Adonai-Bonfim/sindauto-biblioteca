@@ -18,14 +18,14 @@ export const Route = createFileRoute("/catalogo")({
 });
 
 function CatalogPage() {
-  const { books } = useLibrary();
+  const { books, ready } = useLibrary();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
-  const filters = ["Todos", "Disponíveis", "Emprestados", ...categories.slice(1)];
+  const filters = ["Todos", "Disponíveis", "Emprestados", ...new Set([...categories.slice(1), ...books.map(book => book.category)])];
   const filtered = useMemo(() => books.filter((book) => {
     const matchesSearch = `${book.title} ${book.author}`.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "Todos" || (filter === "Disponíveis" && book.status === "Disponível") || (filter === "Emprestados" && book.status === "Emprestado") || book.category === filter;
     return matchesSearch && matchesFilter;
   }), [search, filter, books]);
-  return <AppShell><PageIntro title="Catálogo" subtitle="Encontre sua próxima leitura" /><SearchBar value={search} onChange={setSearch} /><CategoryFilter categories={filters} active={filter} onChange={setFilter} /><div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">{filtered.map((book) => <BookCard key={book.id} book={book} />)}</div>{filtered.length === 0 && <p className="py-16 text-center text-sm text-muted-foreground">Nenhum livro encontrado.</p>}</AppShell>;
+  return <AppShell><PageIntro title="Catálogo" subtitle="Encontre sua próxima leitura" /><SearchBar value={search} onChange={setSearch} /><CategoryFilter categories={filters} active={filter} onChange={setFilter} /><div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">{filtered.map((book) => <BookCard key={book.id} book={book} />)}</div>{!ready && <p role="status" className="py-8">Carregando catálogo…</p>}{ready && filtered.length === 0 && <p className="py-16 text-center text-sm text-muted-foreground">Nenhum livro encontrado.</p>}</AppShell>;
 }

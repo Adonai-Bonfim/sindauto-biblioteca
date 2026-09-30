@@ -1,0 +1,50 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { AuthStore } from "../src/auth/store.server.ts";
+import { LibraryStore } from "../src/books/store.server.ts";
+
+test("estoque, empréstimos e histórico persistem; estoque não fica negativo", () => {
+  const directory = mkdtempSync(join(tmpdir(), "sindauto-library-"));
+  const path = join(directory, "test.sqlite");
+  const auth = new AuthStore(path);
+  const metadata = { name: "Teste Leitor", first_name: "Teste", last_name: "Leitor", department: "Teste" };
+  const a = auth.register("+5571999999999", "SenhaTeste123!", metadata);
+  const b = auth.register("+5571988888888", "SenhaTeste123!", metadata);
+  let store = new LibraryStore(path);
+  const data = { title: "Livro de teste", author: "Autor de teste", category: "Teste", description: "", cover: "", quantity: 2 };
+  try {
+    const id = store.save(data);
+    assert.throws(() => store.save(data), /já estão cadastrados/);
+    assert.throws(() => store.save({ ...data, title: "Negativo", quantity: -1 }));
+    assert.throws(() => store.save({ ...data, title: "Capa inválida", cover: "javascript:alert(1)" }));
+    const loan = store.change(a.id, "borrow", id, new Date("2026-09-30T15:00:00Z")).loans[0];
+    assert.equal(loan.dueDate, "15/10/2026");
+    assert.equal(store.books().find(book => book.id === id).availableCount, 1);
+    assert.throws(() => store.change(a.id, "borrow", id), /já está com/);
+    store.change(b.id, "borrow", id);
+    assert.equal(store.books().find(book => book.id === id).status, "Emprestado");
+    assert.throws(() => store.save({ ...data, quantity: 1 }, id, 1), /menor/);
+    assert.throws(() => store.save(data, id, 99), /outra tela/);
+    assert.throws(() => store.change(b.id, "return", loan.id), /não encontrado/);
+    store.change(a.id, "renew", loan.id);
+    assert.equal(store.snapshot(a.id).loans[0].dueDate, "30/10/2026");
+    assert.throws(() => store.change(a.id, "renew", loan.id), /já foi renovado/);
+    store.close(); store = new LibraryStore(path);
+    assert.equal(store.snapshot(a.id).loans[0].id, loan.id);
+    assert.equal(store.books().find(book => book.id === id).quantity, 2);
+    store.change(a.id, "return", loan.id);
+    assert.equal(store.snapshot(a.id).loans[0].status, "devolvido");
+    assert.ok(store.snapshot(a.id).loans[0].returnedAt);
+    assert.equal(store.books().find(book => book.id === id).availableCount, 1);
+    const second = store.snapshot(b.id).loans[0];
+    store.change(b.id, "return", second.id);
+    store.save({ ...data, quantity: 0 }, id, 1);
+    assert.equal(store.books().find(book => book.id === id).status, "Sem estoque");
+    assert.throws(() => store.change(a.id, "borrow", id), /indisponível/);
+    store.close(); store = new LibraryStore(path);
+    assert.equal(store.snapshot(a.id).loans[0].status, "devolvido");
+  } finally { store.close(); auth.close(); rmSync(directory, { recursive: true, force: true }); }
+});

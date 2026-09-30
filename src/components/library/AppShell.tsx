@@ -1,4 +1,4 @@
-import { Bell, BookOpen, LibraryBig, House, UserRound } from "lucide-react";
+import { BookOpen, LibraryBig, House, UserRound } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="bg-primary text-primary-foreground">
         <div className="mx-auto grid h-20 max-w-app grid-cols-[minmax(0,1fr)_auto] items-center px-4 sm:px-6 lg:px-8">
           <Brand />
-          <Button type="button" aria-label="Notificações" size="icon" variant="ghost" className="h-10 w-10 shrink-0 rounded-full bg-primary-foreground/14 text-primary-foreground hover:bg-primary-foreground/22 hover:text-primary-foreground">
-            <Bell size={19} />
+          <Button asChild size="icon" variant="ghost" className="h-10 w-10 shrink-0 rounded-full bg-primary-foreground/14 text-primary-foreground hover:bg-primary-foreground/22 hover:text-primary-foreground">
+            <Link to="/perfil" aria-label="Meu perfil"><UserRound size={19} /></Link>
           </Button>
         </div>
       </header>
+      <nav aria-label="Navegação no computador" className="mx-auto hidden max-w-app gap-5 px-8 pt-5 md:flex">{navItems.map(({ to, label }) => <Link key={to} to={to} className={`text-sm font-semibold ${pathname === to ? "text-primary" : "text-muted-foreground"}`}>{label}</Link>)}</nav>
       <main className="mx-auto max-w-app px-4 py-6 sm:px-6 md:py-8 lg:px-8">{children}</main>
       <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/96 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-nav backdrop-blur md:hidden">
         <div className="mx-auto grid max-w-md grid-cols-4">

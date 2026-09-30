@@ -10,17 +10,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const refresh = () => {
-      try { setUser(getPrototypeUser()); setFailed(false); }
-      catch { setUser(null); setFailed(true); }
-      setLoading(false);
+    let active = true;
+    let revision = 0;
+    const refresh = async () => {
+      const current = ++revision;
+      try {
+        const restored = await getPrototypeUser();
+        if (active && current === revision) { setUser(restored); setFailed(false); }
+      }
+      catch { if (active && current === revision) { setUser(null); setFailed(true); } }
+      finally { if (active && current === revision) setLoading(false); }
     };
     refresh();
     window.addEventListener(PROTOTYPE_AUTH_EVENT, refresh);
-    window.addEventListener("storage", refresh);
+    window.addEventListener("focus", refresh);
     return () => {
+      active = false;
       window.removeEventListener(PROTOTYPE_AUTH_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
+      window.removeEventListener("focus", refresh);
     };
   }, []);
 

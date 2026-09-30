@@ -1,9 +1,8 @@
 # Cadastro e login por telefone
 
-**Estado atual: Supabase desativado no fluxo do protótipo.** Cadastro, login e
-saída usam `src/lib/prototype-auth.ts` e armazenamento local do navegador.
-As contas não são compartilhadas entre dispositivos ou endereços diferentes.
-As instruções abaixo ficam reservadas para a futura integração real.
+**Estado atual: Supabase desativado.** Cadastro, login, livros e empréstimos usam
+o backend SQLite documentado em `.next/README.md`. As instruções abaixo são
+históricas e não são necessárias para executar a aplicação atual.
 
 A interface usa Supabase Auth com telefone brasileiro normalizado (+55), senha
 e metadados de nome, sobrenome e setor. Não armazena senhas no perfil.
@@ -25,8 +24,5 @@ A configuração local abaixo não altera automaticamente o projeto remoto.
 O QR code pode apontar à página inicial ou a um livro; o formulário preserva a URL.
 Para uso fora da rede local, o QR code deve usar a URL publicada com HTTPS.
 
-Os empréstimos do protótipo são compartilhados pela memória do servidor local.
-Todos os dispositivos conectados a ele consultam a disponibilidade a cada dois
-segundos. Retirada e renovação usam períodos de 15 dias; somente a devolução libera
-o exemplar. Reiniciar o servidor apaga os empréstimos simulados. A identificação
-das contas é local e não constitui autenticação de produção.
+Os empréstimos atuais ficam persistidos em SQLite e identificam o usuário por
+sessão autenticada. A disponibilidade é atualizada a cada dois segundos.

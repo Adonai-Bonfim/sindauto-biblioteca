@@ -8,6 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.next/database/data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
 dist
 dist-ssr
 .output

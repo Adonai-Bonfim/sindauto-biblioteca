@@ -1,11 +1,12 @@
-﻿import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { books as catalog, type Book, type Loan } from "@/lib/library-data";
+import { type Book, type Loan } from "@/lib/library-data";
 import { useAuth } from "./AuthProvider";
-import { readPrototypeLoans, changePrototypeLoan } from "@/lib/prototype-loans.server";
+import { readPrototypeLoans, changePrototypeLoan } from "@/lib/prototype-loans.functions";
 
 type LibraryContextValue = {
   books: Book[]; loans: Loan[]; busy: boolean; ready: boolean;
+  refresh: () => Promise<void>;
   borrow: (book: Book) => Promise<Loan | undefined>;
   renew: (id: string) => Promise<void>; returnBook: (id: string) => Promise<void>;
 };
@@ -16,11 +17,8 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   const key = ["prototype-loans", user.id];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const query = useQuery({ queryKey: key, queryFn: () => readPrototypeLoans({ data: { userId: user.id } }), refetchInterval: 2000, refetchOnWindowFocus: "always" });
-  const books: Book[] = catalog.map(book => {
-    const active = query.data?.availability.find(item => item.bookId === book.id);
-    return { ...book, status: active ? "Emprestado" : "Disponível", availableAgain: active?.dueDate };
-  });
+  const query = useQuery({ queryKey: key, queryFn: () => readPrototypeLoans(), refetchInterval: 2000, refetchOnWindowFocus: "always" });
+  const books: Book[] = query.data?.books ?? [];
   const loans: Loan[] = (query.data?.loans ?? []).flatMap(loan => {
     const book = books.find(item => item.id === loan.bookId);
     return book ? [{ ...loan, book }] : [];
@@ -29,7 +27,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
     setBusy(true); setError("");
     try {
       await client.cancelQueries({ queryKey: key });
-      const result = await changePrototypeLoan({ data: { userId: user.id, action, id } });
+      const result = await changePrototypeLoan({ data: { action, id } });
       if (!result.ok) throw new Error(result.message);
       client.setQueryData(key, result.snapshot);
       return result.snapshot;
@@ -37,6 +35,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
     finally { setBusy(false); void client.invalidateQueries({ queryKey: key }); }
   }
   return <LibraryContext.Provider value={{ books, loans, busy, ready: Boolean(query.data) && !query.isError,
+    refresh: async () => { await client.invalidateQueries({ queryKey: key }); },
     borrow: async book => {
       const result = await change("borrow", book.id);
       const loan = result?.loans.find(item => item.bookId === book.id && item.status !== "devolvido");

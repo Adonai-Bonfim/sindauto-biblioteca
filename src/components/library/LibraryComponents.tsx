@@ -60,7 +60,7 @@ export function BookCard({ book }: { book: Book }) {
         <p className="mt-1 truncate text-[11px] text-muted-foreground">{book.author}</p>
         <span className={`mt-2 inline-flex w-fit max-w-full items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${available ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}>
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${available ? "bg-success" : "bg-danger"}`} />
-          <span className="whitespace-normal">{!ready ? "Consultando…" : available ? "Disponível" : `Emprestado até ${book.availableAgain}`}</span>
+          <span className="whitespace-normal">{!ready ? "Consultando…" : book.status === "Sem estoque" ? "Sem estoque" : available ? "Disponível" : `Emprestado até ${book.availableAgain}`}</span>
         </span>
         <Button asChild size="sm" className="mt-auto h-9 w-full rounded-lg px-2 text-xs shadow-none">
           <Link to="/livros/$bookId" params={{ bookId: book.id }}>Ver livro <ArrowRight size={14} /></Link>
@@ -83,6 +83,7 @@ export function LoanCard({ loan, onRenew, onReturn }: { loan: Loan; onRenew: () 
             <span className="text-muted-foreground"><CalendarDays size={13} className="mb-1" />Retirada em<strong className="block text-foreground">{loan.checkoutDate}</strong></span>
             <span className="text-muted-foreground"><CalendarDays size={13} className="mb-1" />Devolução até<strong className="block text-primary">{loan.dueDate}</strong></span>
           </div>
+          {loan.returnedAt && <p className="mt-2 text-xs text-muted-foreground">Devolvido em {new Date(loan.returnedAt).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}</p>}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:w-28 sm:grid-cols-1">

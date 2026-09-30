@@ -37,7 +37,7 @@ export function AuthScreen({ sessionError = false }: { sessionError?: boolean })
       } else {
         await signInPrototype(phone, password);
       }
-    } catch (err) { setError(err instanceof Error && !(err instanceof DOMException) ? err.message : "Não foi possível salvar o cadastro. Permita o armazenamento neste navegador e tente novamente."); }
+    } catch (err) { setError(err instanceof Error ? err.message : "Não foi possível conectar à biblioteca. Tente novamente."); }
     finally { setBusy(false); }
   }
 
@@ -50,7 +50,7 @@ export function AuthScreen({ sessionError = false }: { sessionError?: boolean })
         <p className="mt-2 text-sm text-muted-foreground">Bem-vindo à Biblioteca Sindauto Bahia.</p>
       </div>
       <section className="rounded-card border border-border bg-card p-5 shadow-card sm:p-6" aria-labelledby="auth-title">
-        <p className="mb-4 rounded-lg bg-warning-soft p-3 text-xs leading-relaxed">Modo de demonstração. Use dados e senha de teste. O cadastro fica salvo apenas neste navegador.</p>
+        <p className="mb-4 rounded-lg bg-muted p-3 text-xs leading-relaxed">Seu cadastro fica salvo. Use o mesmo telefone e senha para entrar em qualquer dispositivo.</p>
         <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl bg-muted p-1" aria-label="Opções de acesso">
           {([['signup', 'Criar cadastro'], ['login', 'Entrar']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} disabled={busy} onClick={() => { setMode(value); setError(""); setNotice(""); }} className={`rounded-lg px-3 py-2.5 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-primary ${mode === value ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}>{label}</button>)}
         </div>

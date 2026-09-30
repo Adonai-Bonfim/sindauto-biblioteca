@@ -1,10 +1,6 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+﻿# Orientações do projeto
+
+- Preserve o histórico Git publicado; não faça force push.
+- Use Bun para manter o arquivo bun.lock atualizado.
+- Valide alterações com bun test tests, bun run typecheck e bun run build.
+- O modo atual é um protótipo com cadastro local e empréstimos em memória no servidor.

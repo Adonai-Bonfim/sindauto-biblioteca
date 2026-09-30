@@ -1,4 +1,4 @@
-# Sindauto Biblioteca
+﻿# Sindauto Biblioteca
 
 Projeto: Biblioteca Sindauto
 
@@ -950,23 +950,34 @@ experiência simples para o colaborador.
 
 Priorize fidelidade visual ao mockup fornecido.
 
-This project was built with [Lovable](https://lovable.dev).
+## Desenvolvimento independente
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/bbe1760b-25ff-47bc-9886-c6dfecb55def).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Requisitos: Node.js 24 e Bun 1.3+.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install --frozen-lockfile
+bun run dev
 ```
+
+Acesse http://localhost:8080 ou o endereço LAN exibido no terminal.
+
+```sh
+bun test tests
+bun run typecheck
+bun run build
+bun run start
+```
+
+A versão compilada utiliza um servidor Node.js. A porta padrão é 3000;
+configure PORT e HOST conforme necessário.
+
+O aplicativo usa SQLite para usuários, sessões, livros, estoque, empréstimos e
+histórico. Os dados ficam em `.next/database/data/library.sqlite` e sobrevivem à
+reinicialização. O Supabase permanece desativado.
+
+Para liberar um administrador, execute `node .next/scripts/admin.mjs TELEFONE_COM_DDD`.
+Entre com o telefone autorizado e abra **Perfil → Gerenciar livros e estoque**.
+
+Depois de compilar, execute `bun run test:backend` para validar a persistência
+e a integração HTTP. Consulte [.next/README.md](.next/README.md) para configuração
+e backup. Contas antigas da simulação precisam ser cadastradas uma vez no backend.

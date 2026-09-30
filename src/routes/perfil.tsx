@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, Phone, LogOut } from "lucide-react";
 import { AppShell } from "@/components/library/AppShell";
 import { PageIntro } from "@/components/library/LibraryComponents";
@@ -21,7 +21,7 @@ function ProfilePage() {
   async function logout() {
     setBusy(true); setError("");
     try {
-      signOutPrototype();
+      await signOutPrototype();
     } catch { setError("Não foi possível sair. Tente novamente."); }
     finally { setBusy(false); }
   }
@@ -33,6 +33,7 @@ function ProfilePage() {
         <h2 className="mt-3 text-xl font-bold">{name}</h2><p className="text-sm text-primary-foreground/75">Colaborador Sindauto Bahia</p>
       </div>
       <div className="space-y-4 p-5 text-sm">
+        {user.isAdmin && <Button asChild className="h-11 w-full"><Link to="/admin">Gerenciar livros e estoque</Link></Button>}
         <p className="flex items-center gap-3"><Phone className="text-primary" size={19} /><span><small className="block text-muted-foreground">Telefone</small>{user.phone ? "+" + user.phone.replace(/^\+/, "") : "Não informado"}</span></p>
         <p className="flex items-center gap-3"><Building2 className="text-primary" size={19} /><span><small className="block text-muted-foreground">Setor</small>{user.user_metadata["department"] || "Não informado"}</span></p>
         {error && <p role="alert" className="text-primary">{error}</p>}
