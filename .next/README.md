@@ -51,6 +51,10 @@ Os quatro títulos de demonstração são inseridos apenas se ainda não existir
 A quantidade considera o total de exemplares: não pode ser reduzida abaixo da
 quantidade emprestada. Uma devolução libera um exemplar; vencer o prazo não libera.
 
+O botão **Remover** retira um livro do catálogo após confirmação. A remoção é
+bloqueada enquanto houver empréstimos ativos, e o histórico permanece disponível.
+Se o mesmo título e autor forem cadastrados novamente, o registro é reativado.
+
 ## Verificação
 
 ```sh

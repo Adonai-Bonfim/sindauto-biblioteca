@@ -59,11 +59,14 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     const saved = await call("saveBook", { book }, cookie);
     assert.equal(saved.result.ok, true);
     const bookId = saved.result.id;
+    assert.equal((await call("removeBook", { id: bookId, revision: 1 }, readerCookie)).result.ok, false);
+    assert.equal((await call("removeBook", { id: bookId, revision: 1 })).result.ok, false);
     const race = await Promise.all([call("changePrototypeLoan", { action: "borrow", id: bookId }, cookie), call("changePrototypeLoan", { action: "borrow", id: bookId }, readerCookie)]);
     assert.equal(race.filter(item => item.result.ok).length, 1);
     const winnerCookie = race[0].result.ok ? cookie : readerCookie;
     const loserCookie = race[0].result.ok ? readerCookie : cookie;
     const borrowed = race.find(item => item.result.ok).result.snapshot.loans[0];
+    assert.equal((await call("removeBook", { id: bookId, revision: 1 }, cookie)).result.ok, false);
     const otherView = (await call("readPrototypeLoans", undefined, loserCookie, "GET")).result;
     assert.equal(otherView.books.find(book => book.id === bookId).status, "Emprestado");
     assert.equal(otherView.loans.length, 0);
@@ -76,6 +79,10 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
     const returned = await call("changePrototypeLoan", { action: "return", id: borrowed.id }, winnerCookie);
     assert.equal(returned.result.snapshot.loans[0].status, "devolvido");
     assert.equal(returned.result.snapshot.books.find(book => book.id === bookId).availableCount, 1);
+    assert.equal((await call("removeBook", { id: bookId, revision: 1 }, cookie)).result.ok, true);
+    const removedView = (await call("readPrototypeLoans", undefined, winnerCookie, "GET")).result;
+    assert.equal(removedView.books.some(book => book.id === bookId), false);
+    assert.equal(removedView.loans[0].book.title, book.title);
     assert.equal((await call("readSession", undefined, cookie, "GET")).result.id, id);
     const second = await call("loginUser", { phone: account.phone, password: account.password });
     assert.equal(second.result.user.id, id);

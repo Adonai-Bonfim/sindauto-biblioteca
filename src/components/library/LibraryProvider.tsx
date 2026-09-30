@@ -20,7 +20,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   const query = useQuery({ queryKey: key, queryFn: () => readPrototypeLoans(), refetchInterval: 2000, refetchOnWindowFocus: "always" });
   const books: Book[] = query.data?.books ?? [];
   const loans: Loan[] = (query.data?.loans ?? []).flatMap(loan => {
-    const book = books.find(item => item.id === loan.bookId);
+    const book = loan.book;
     return book ? [{ ...loan, book }] : [];
   });
   async function change(action: "borrow" | "renew" | "return", id: string) {

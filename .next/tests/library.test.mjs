@@ -26,6 +26,7 @@ test("estoque, empréstimos e histórico persistem; estoque não fica negativo",
     assert.throws(() => store.change(a.id, "borrow", id), /já está com/);
     store.change(b.id, "borrow", id);
     assert.equal(store.books().find(book => book.id === id).status, "Emprestado");
+    assert.throws(() => store.remove(id, 1), /empréstimos ativos/);
     assert.throws(() => store.save({ ...data, quantity: 1 }, id, 1), /menor/);
     assert.throws(() => store.save(data, id, 99), /outra tela/);
     assert.throws(() => store.change(b.id, "return", loan.id), /não encontrado/);
@@ -46,5 +47,16 @@ test("estoque, empréstimos e histórico persistem; estoque não fica negativo",
     assert.throws(() => store.change(a.id, "borrow", id), /indisponível/);
     store.close(); store = new LibraryStore(path);
     assert.equal(store.snapshot(a.id).loans[0].status, "devolvido");
+    assert.throws(() => store.remove(id, 1), /alterado/);
+    store.remove(id, 2);
+    assert.equal(store.books().some(book => book.id === id), false);
+    assert.equal(store.snapshot(a.id).loans[0].book.title, data.title);
+    assert.throws(() => store.change(a.id, "borrow", id), /não encontrado/);
+    store.remove("habitos-atomicos", 1);
+    store.close(); store = new LibraryStore(path);
+    assert.equal(store.books().some(book => book.id === id || book.id === "habitos-atomicos"), false);
+    assert.equal(store.snapshot(a.id).loans[0].book.title, data.title);
+    assert.equal(store.save(data), id);
+    assert.equal(store.books().find(book => book.id === id).quantity, 2);
   } finally { store.close(); auth.close(); rmSync(directory, { recursive: true, force: true }); }
 });
