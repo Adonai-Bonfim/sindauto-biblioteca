@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, ChevronRight, UserRound } from "lucide-react";
+import { BookOpen, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/library/AppShell";
 import { BookCard, CategoryFilter, LoanCard, PageIntro, SearchBar, SectionHeading } from "@/components/library/LibraryComponents";
@@ -35,15 +35,13 @@ function Index() {
     <AppShell>
       <PageIntro subtitle={`Olá, ${user.user_metadata["first_name"] || "leitor"}! Escolha seu próximo livro`} />
       <section className="mb-4 grid grid-cols-2 gap-3" aria-label="Resumo">
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-card border border-border bg-card p-3 shadow-card sm:p-4">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-card border border-border bg-card p-3 shadow-card sm:p-4">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-danger-soft text-primary"><BookOpen size={20} /></span>
           <span className="min-w-0 text-xs text-muted-foreground sm:text-sm">Disponíveis<strong className="block text-2xl font-extrabold text-primary">{ready ? books.reduce((total, book) => total + book.availableCount, 0) : "…"}</strong></span>
-          <ChevronRight className="shrink-0 text-muted-foreground" size={17} />
         </div>
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-card border border-border bg-card p-3 shadow-card sm:p-4">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-card border border-border bg-card p-3 shadow-card sm:p-4">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-warning-soft text-warning-foreground"><UserRound size={20} /></span>
           <span className="min-w-0 text-xs text-muted-foreground sm:text-sm">Com você<strong className="block text-2xl font-extrabold text-primary">{activeLoans.length}</strong></span>
-          <ChevronRight className="shrink-0 text-muted-foreground" size={17} />
         </div>
       </section>
       <SearchBar value={search} onChange={setSearch} />
