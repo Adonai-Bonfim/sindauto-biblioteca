@@ -18,12 +18,14 @@ test("HTTP: cadastro, cookie, outro dispositivo, reinício e saída", { timeout:
   const ids = Object.fromEntries([...manifest.matchAll(/"([a-f0-9]+)":\s*\{\s*functionName: "(\w+)_createServerFn_handler"/g)].map(match => [match[2], match[1]]));
   let server;
   async function start() {
-    server = spawn(process.execPath, [join(directory, "index.mjs")], { env: { ...process.env, PORT: "3198", HOST: "127.0.0.1", LIBRARY_DB_PATH: join(folder, "library.sqlite") }, stdio: "pipe", windowsHide: true });
+    server = spawn(process.execPath, [join(directory, "index.mjs")], { env: { ...process.env, DATABASE_URL: "", VERCEL: "", PORT: "3198", HOST: "127.0.0.1", LIBRARY_DB_PATH: join(folder, "library.sqlite") }, stdio: "pipe", windowsHide: true });
+    let diagnostics = "";
+    server.stderr.on("data", chunk => { diagnostics += chunk.toString(); });
     for (let i = 0; i < 50; i++) {
       try { if ((await fetch(base)).ok) return; } catch {}
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    throw new Error("Servidor de teste não iniciou.");
+    throw new Error("Servidor de teste não iniciou. " + diagnostics);
   }
   async function stop() { if (server && server.exitCode === null) { const exited = once(server, "exit"); server.kill(); await exited; } }
   async function call(name, data, cookie = "", method = "POST") {

@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     tailwindcss(),
     tanstackStart({ server: { entry: "server" } }),
-    ...(command === "build" ? [nitro()] : []),
+    ...(command === "build" ? [nitro({ traceDeps: ["pg"] })] : []),
     react(),
   ],
 }));

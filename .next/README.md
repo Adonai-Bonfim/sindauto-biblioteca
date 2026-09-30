@@ -1,7 +1,9 @@
 # Backend da Biblioteca Sindauto
 
 Backend integrado ao TanStack Start, executado em Node.js 24. Usuários, sessões,
-livros, estoque, empréstimos e histórico são persistidos em SQLite, sem Supabase.
+livros, estoque, empréstimos e histórico são persistidos no Neon/PostgreSQL quando
+`DATABASE_URL` está configurada; SQLite permanece disponível para desenvolvimento
+local. Veja [Configuração e migração para Neon](NEON.md). Supabase não é utilizado.
 
 ## Módulos
 
