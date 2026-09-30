@@ -12,9 +12,8 @@ const navItems = [
 
 export function Brand() {
   return (
-    <div className="flex min-w-0 items-center gap-2.5" aria-label="Sindauto Bahia">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-yellow font-black italic text-brand-red">S</span>
-      <span className="text-sm font-bold leading-tight text-primary-foreground">Sindauto<br />Bahia</span>
+    <div className="min-w-0 pr-3">
+      <img src="/logo-sindauto.png" alt="Sindauto Bahia" width={230} height={77} className="h-auto max-h-14 w-40 max-w-full rounded bg-white object-contain sm:w-[167px]" />
     </div>
   );
 }
