@@ -54,7 +54,7 @@ export function AdminLoanHistory() {
       </div>
       <p className="mb-3 text-xs text-muted-foreground">{filtered.length} registro(s) encontrado(s). Horários de Brasília. {response?.ok && <>Atualizado em {dateTime(response.history.generatedAt)}.</>}</p>
       {query.isPending ? <p role="status" className="py-10 text-center">Carregando registros…</p> : shown.length === 0 ? <p className="rounded-card border border-dashed p-10 text-center text-muted-foreground">Nenhum empréstimo encontrado para estes filtros.</p> : <div className="space-y-3">{shown.map(record => <article key={record.id} className="rounded-card border bg-card p-4 shadow-card sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
           <div className="flex min-w-0 flex-1 gap-3">
             <img src={record.cover || "/books/placeholder.svg"} alt={`Capa de ${record.title}`} loading="lazy" width={64} height={96} className="h-24 w-16 shrink-0 rounded bg-muted object-contain" onError={event => { const img = event.currentTarget; if (img.getAttribute("src") !== "/books/placeholder.svg") img.src = "/books/placeholder.svg"; }} />
             <div className="min-w-0"><h2 className="break-words font-bold">{record.title}</h2><p className="text-xs text-muted-foreground">{record.author}{record.bookRemoved ? " · Removido do acervo" : ""}</p></div>
