@@ -1,983 +1,161 @@
-﻿# Sindauto Biblioteca
-
-Projeto: Biblioteca Sindauto
-
-Quero desenvolver uma aplicação web responsiva para controle de empréstimos de livros internos do Sindauto Bahia.
-
-A interface deve seguir exatamente o conceito visual do mockup aprovado: moderna, limpa, profissional, mobile first, com identidade visual do Sindauto Bahia.
-
-Objetivo da aplicação
-
-O colaborador escaneia um QR Code e acessa diretamente a Biblioteca Sindauto.
-
-Na página inicial ele deve conseguir:
-
-visualizar os livros disponíveis;
-
-pesquisar livros;
-
-filtrar por categoria;
-
-visualizar livros emprestados;
-
-selecionar um livro;
-
-solicitar empréstimo;
-
-acompanhar os livros que estão com ele;
-
-visualizar data de retirada;
-
-visualizar data prevista de devolução;
-
-renovar empréstimo;
-
-registrar devolução.
-
-A aplicação deve funcionar perfeitamente em celular, tablet e computador.
-
-
-
-Identidade visual
-
-Usar a identidade visual do Sindauto Bahia.
-
-Cores principais
-
-Vermelho principal:
-
-#EC2024
-
-Amarelo:
-
-#FEF101
-
-Branco:
-
-#FFFFFF
-
-Cinza de fundo:
-
-#F6F6F6
-
-Cinza de bordas:
-
-#E8E8E8
-
-Texto principal:
-
-#171717
-
-Texto secundário:
-
-#737373
-
-Verde de disponibilidade:
-
-#22C55E
-
-Vermelho de indisponibilidade:
-
-#EF4444
-
-Tipografia
-
-Utilizar:
-
-Montserrat
-
-A interface deve ter aparência moderna, semelhante a aplicações SaaS premium.
-
-Utilizar:
-
-bastante espaço em branco;
-
-cards arredondados;
-
-sombras suaves;
-
-bordas discretas;
-
-ícones minimalistas;
-
-botões grandes e fáceis de clicar;
-
-excelente leitura em dispositivos móveis.
-
-
-
-Estrutura geral da aplicação
-
-A aplicação deve possuir duas áreas principais:
-
-COLABORADOR
-
-ADMIN / RH
-
-Neste primeiro desenvolvimento, priorizar a área do colaborador.
-
-
-
-Dashboard do colaborador
-
-A página inicial deve seguir esta estrutura visual.
-
-Header
-
-No topo utilizar um header vermelho.
-
-Exibir:
-
-Logo Sindauto Bahia
-
-À direita:
-
-ícone de notificações
-
-O header deve ter aproximadamente:
-
-background: #EC2024;
-
-E texto branco.
-
-
-
-Título principal
-
-Logo abaixo do header:
-
-Biblioteca Sindauto
-
-O texto “Biblioteca” deve ser preto.
-
-O texto “Sindauto” deve ser vermelho.
-
-Adicionar um ícone simples de livro aberto ao lado.
-
-Abaixo:
-
-Olá! Escolha seu próximo livro
-
-Texto secundário em cinza.
-
-Adicionar um pequeno detalhe amarelo decorativo abaixo do título.
-
-
-
-Cards de resumo
-
-Criar dois cards lado a lado.
-
-Card 1
-
-Ícone:
-
-Livro
-
-Texto:
-
-Disponíveis
-
-Número grande:
-
-24
-
-Ícone e número em vermelho.
-
-Card 2
-
-Ícone:
-
-Usuário
-
-Texto:
-
-Com você
-
-Número:
-
-1
-
-Ícone amarelo e número vermelho.
-
-Os cards devem possuir:
-
-border-radius: 16px;
-
-background: white;
-
-border: 1px solid #EEEEEE;
-
-box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-
-
-
-Campo de pesquisa
-
-Criar uma barra de pesquisa grande.
-
-Placeholder:
-
-Pesquisar livro...
-
-Adicionar ícone de lupa.
-
-Visual:
-
-background: #F3F3F3;
-
-border-radius: 50px;
-
-Sem borda pesada.
-
-
-
-Filtro por categorias
-
-Logo abaixo da busca criar chips horizontais.
-
-Categorias:
-
-Liderança
-
-Tecnologia
-
-Desenvolvimento
-
-Sustentabilidade
-
-Categoria ativa:
-
-background: #EC2024;
-
-color: white;
-
-Categorias inativas:
-
-background: #F2F2F2;
-
-color: #555555;
-
-Os chips devem ser arredondados.
-
-Em dispositivos móveis permitir scroll horizontal.
-
-
-
-Seção: Livros disponíveis
-
-Título:
-
-Livros disponíveis
-
-À direita:
-
-Ver todos >
-
-“Ver todos” deve ser vermelho.
-
-Criar uma grade de livros.
-
-No celular:
-
-2 livros por linha
-
-Em telas maiores:
-
-3 ou 4 livros por linha
-
-
-
-Card de livro
-
-Cada card deve apresentar:
-
-Imagem da capa
-
-Título
-
-Autor
-
-Status
-
-Botão
-
-Exemplo:
-
-Hábitos Atômicos
-
-
-
-James Clear
-
-
-
-● Disponível
-
-
-
-[ Ver livro > ]
-
-Status disponível:
-
-color: #16A34A;
-
-background: #DCFCE7;
-
-Botão:
-
-background: #EC2024;
-
-color: white;
-
-border-radius: 10px;
-
-
-
-Livros de demonstração
-
-Utilizar inicialmente os seguintes dados mockados.
-
-Livro 1
-
-Título: Hábitos Atômicos
-
-Autor: James Clear
-
-Categoria: Desenvolvimento
-
-Status: Disponível
-
-Livro 2
-
-Título: Essencialismo
-
-Autor: Greg McKeown
-
-Categoria: Desenvolvimento
-
-Status: Disponível
-
-Livro 3
-
-Título: Inteligência Emocional
-
-Autor: Daniel Goleman
-
-Categoria: Desenvolvimento
-
-Status: Emprestado
-
-Disponível novamente: 08/10
-
-Livro 4
-
-Título: Comece pelo Porquê
-
-Autor: Simon Sinek
-
-Categoria: Liderança
-
-Status: Disponível
-
-
-
-Estado de livro emprestado
-
-Quando um livro estiver emprestado, substituir o status verde por:
-
-● Emprestado até 08/10
-
-Utilizar:
-
-color: #DC2626;
-
-background: #FEE2E2;
-
-O colaborador não deve visualizar quem está com o livro.
-
-Essa informação deve existir apenas no painel administrativo.
-
-
-
-Tela de detalhes do livro
-
-Ao clicar em:
-
-Ver livro
-
-abrir a página de detalhes.
-
-Mostrar:
-
-Capa do livro
-
-
-
-Título
-
-
-
-Autor
-
-
-
-Categoria
-
-
-
-Status
-
-
-
-Descrição
-
-
-
-Prazo de empréstimo
-
-Exemplo:
-
-Prazo de empréstimo: 15 dias
-
-Se o livro estiver disponível, mostrar botão:
-
-Pegar emprestado
-
-Botão vermelho, grande.
-
-
-
-Confirmação de empréstimo
-
-Ao clicar em:
-
-Pegar emprestado
-
-abrir modal.
-
-Exibir:
-
-Confirmar empréstimo?
-
-Informações:
-
-Livro:
-
-Hábitos Atômicos
-
-
-
-Retirada:
-
-23/09/2026 - 14:32
-
-
-
-Prazo:
-
-15 dias
-
-
-
-Devolução prevista:
-
-08/10/2026
-
-Botões:
-
-Cancelar
-
-Confirmar empréstimo
-
-
-
-Resultado do empréstimo
-
-Após confirmar, mostrar:
-
-Empréstimo realizado com sucesso!
-
-Exibir:
-
-Livro
-
-Data da retirada
-
-Horário
-
-Data prevista de devolução
-
-Adicionar botão:
-
-Ver meus empréstimos
-
-
-
-Seção: Meus empréstimos
-
-Na dashboard inicial, abaixo dos livros disponíveis, criar:
-
-Meus empréstimos
-
-Exibir card horizontal.
-
-Exemplo:
-
-Inteligência Emocional
-
-
-
-Daniel Goleman
-
-
-
-Retirada em:
-
-01/10/2026
-
-
-
-Devolução até:
-
-08/10/2026
-
-
-
-[ Renovar ]
-
-
-
-[ Devolver ]
-
-O botão:
-
-Renovar
-
-deve ser branco com borda cinza.
-
-O botão:
-
-Devolver
-
-deve possuir borda vermelha e texto vermelho.
-
-
-
-Menu inferior mobile
-
-Criar menu fixo inferior.
-
-Itens:
-
-Início
-
-Catálogo
-
-Meus livros
-
-Perfil
-
-Cada item deve possuir ícone.
-
-Item ativo:
-
-color: #EC2024;
-
-Adicionar pequena linha vermelha abaixo do item ativo.
-
-
-
-Página catálogo
-
-Criar rota:
-
-/catalogo
-
-Mostrar todos os livros.
-
-Adicionar filtros:
-
-Todos
-
-Disponíveis
-
-Emprestados
-
-Liderança
-
-Tecnologia
-
-Desenvolvimento
-
-Sustentabilidade
-
-Adicionar pesquisa.
-
-
-
-Página Meus Livros
-
-Criar rota:
-
-/meus-livros
-
-Separar:
-
-Em andamento
-
-Histórico
-
-Para empréstimos ativos mostrar:
-
-Capa
-
-Título
-
-Data retirada
-
-Data devolução
-
-Dias restantes
-
-Status
-
-
-
-Perfil do colaborador
-
-Criar rota:
-
-/perfil
-
-Exibir:
-
-Foto/avatar
-
-Nome
-
-E-mail
-
-Setor
-
-Quantidade de empréstimos
-
-Histórico
-
-
-
-Sistema de empréstimo
-
-Cada empréstimo precisa armazenar:
-
-ID do empréstimo
-
-ID do usuário
-
-ID do livro
-
-Data da retirada
-
-Horário da retirada
-
-Data prevista de devolução
-
-Data real da devolução
-
-Status
-
-Status possíveis:
-
-ativo
-
-devolvido
-
-atrasado
-
-renovado
-
-
-
-Estrutura básica do banco
-
-Criar tabelas semelhantes a:
-
-users
-
-books
-
-loans
-
-categories
-
-users
-
-id
-
-name
-
-email
-
-department
-
-avatar
-
-created_at
-
-books
-
-id
-
-title
-
-author
-
-description
-
-cover_url
-
-category_id
-
-status
-
-quantity
-
-created_at
-
-categories
-
-id
-
-name
-
-loans
-
-id
-
-user_id
-
-book_id
-
-checkout_date
-
-checkout_time
-
-due_date
-
-returned_at
-
-status
-
-renewed
-
-created_at
-
-
-
-Regras de negócio
-
-Prazo padrão:
-
-15 dias
-
-Permitir inicialmente:
-
-1 renovação
-
-Ao realizar empréstimo:
-
-book.status = borrowed
-
-Ao realizar devolução:
-
-book.status = available
-
-Nunca apagar histórico de empréstimos.
-
-
-
-Dashboard administrativa futura
-
-Preparar a arquitetura para existir uma rota:
-
-/admin
-
-Onde RH poderá visualizar:
-
-Total de livros
-
-Livros disponíveis
-
-Livros emprestados
-
-Livros atrasados
-
-Empréstimos no mês
-
-Colaboradores com livros
-
-Tabela:
-
-Livro
-
-Colaborador
-
-Retirada
-
-Previsão de devolução
-
-Status
-
-Filtros:
-
-Todos
-
-Emprestados
-
-Atrasados
-
-Devolvidos
-
-
-
-Responsividade
-
-A interface precisa ser mobile first.
-
-No celular deve ficar visualmente muito próxima de um aplicativo.
-
-No desktop utilizar:
-
-largura máxima de aproximadamente 1200px
-
-centralizada.
-
-Cards devem adaptar automaticamente para mais colunas.
-
-
-
-Componentes
-
-Criar componentes reutilizáveis.
-
-Sugestão:
-
-Header
-
-SearchBar
-
-CategoryFilter
-
-BookCard
-
-BookGrid
-
-LoanCard
-
-StatsCard
-
-BottomNavigation
-
-BookDetails
-
-LoanConfirmationModal
-
-
-
-Tecnologia
-
-Pode utilizar:
-
-React
-
-TypeScript
-
-Tailwind CSS
-
-Utilizar componentes modernos e organizados.
-
-Se necessário utilizar:
-
-Lucide Icons
-
-para os ícones.
-
-
-
-Direção visual obrigatória
-
-A interface precisa parecer:
-
-moderna
-
-profissional
-
-corporativa
-
-simples
-
-intuitiva
-
-premium
-
-Não criar aparência de sistema antigo ou painel administrativo genérico.
-
-Quero que a dashboard principal fique visualmente o mais próxima possível do mockup de referência da Biblioteca Sindauto:
-
-header vermelho;
-
-cards brancos;
-
-cantos arredondados;
-
-vermelho e amarelo como cores de destaque;
-
-capas dos livros;
-
-seção de livros disponíveis;
-
-seção de empréstimos;
-
-navegação inferior;
-
-visual de aplicativo mobile;
-
-bastante espaço em branco;
-
-design limpo;
-
-experiência simples para o colaborador.
-
-Priorize fidelidade visual ao mockup fornecido.
-
-## Desenvolvimento independente
-
-Requisitos: Node.js 24 e Bun 1.3+.
-
-```sh
+﻿# Biblioteca Sindauto
+
+Sistema web para gestão do acervo e dos empréstimos de livros do Sindauto Bahia. Oferece acesso pelo navegador, inclusive por QR Code, com interface adaptada a celulares, tablets e computadores.
+
+## Funcionalidades
+
+### Colaboradores
+
+- Cadastro com nome, sobrenome, setor, telefone e senha.
+- Acesso por telefone e senha.
+- Catálogo com capas, pesquisa, categorias e disponibilidade.
+- Empréstimos com prazo de 15 dias e uma renovação.
+- Registro de devolução e consulta ao histórico pessoal.
+- Visualização das datas de retirada, devolução prevista e situação dos empréstimos.
+
+### Administração
+
+- Cadastro, edição e remoção de livros, com controle de quantidade.
+- Acompanhamento dos empréstimos com capa, livro, colaborador, setor e telefone.
+- Consulta às datas, horários, prazos, renovações e devoluções.
+- Filtros por pessoa, livro, situação e período.
+- Histórico preservado para acompanhamento do acervo.
+
+O acesso administrativo é validado no servidor e concedido a contas já cadastradas.
+
+## Tecnologias
+
+| Camada | Tecnologias |
+| --- | --- |
+| Aplicação | React, TypeScript e TanStack Start |
+| Rotas e consultas | TanStack Router e TanStack Query |
+| Interface | Tailwind CSS, Radix UI e Lucide |
+| Banco em produção | PostgreSQL no Neon, com driver pg |
+| Hospedagem | Cloudflare Workers |
+| Desenvolvimento | Vite e Bun |
+| Backend local alternativo | Node.js e SQLite |
+
+## Organização
+
+~~~text
+src/
+  components/       Componentes e telas da biblioteca
+  lib/              Funções de servidor e utilitários
+  routes/           Rotas da aplicação
+.next/
+  src/              Fontes do backend: autenticação, acervo e persistência
+  scripts/          Administração e transferência de dados
+  tests/            Testes de integração do backend
+public/             Imagens e arquivos públicos
+scripts/            Verificações do runtime Cloudflare
+tests/              Testes da aplicação
+wrangler.jsonc      Configuração do Worker
+vite.config.ts      Build e desenvolvimento para Cloudflare
+vite.node.config.ts Backend Node para testes locais
+~~~
+
+Neste projeto, .next/src contém código-fonte versionado do backend. A aplicação utiliza TanStack Start; essa pasta não representa um build de Next.js.
+
+## Desenvolvimento local
+
+Requisitos: Node.js 24 e Bun 1.3 ou superior.
+
+~~~sh
 bun install --frozen-lockfile
+~~~
+
+Copie .env.example para .env.local na raiz do projeto e preencha DATABASE_URL com uma conexão de um ambiente Neon de desenvolvimento. O arquivo de exemplo contém somente marcadores fictícios.
+
+~~~sh
 bun run dev
-```
+~~~
 
-Acesse http://localhost:8080 ou o endereço LAN exibido no terminal.
+Acesse http://localhost:8080. O servidor também escuta na rede local; o acesso por outro dispositivo depende da rede e do firewall.
 
-```sh
+O ambiente padrão utiliza o runtime Cloudflare e requer DATABASE_URL para operações de banco. O backend Node oferece SQLite como alternativa quando essa variável não está configurada.
+
+## Configuração e proteção de dados
+
+| Variável | Finalidade | Onde configurar |
+| --- | --- | --- |
+| DATABASE_URL | Conexão PostgreSQL exclusiva do servidor | .env.local no desenvolvimento; Secret do Worker em produção |
+| LIBRARY_DB_PATH | Caminho opcional do SQLite no backend Node | Ambiente local |
+
+- Nunca publique conexões reais, senhas, tokens, arquivos de ambiente ou cópias do banco.
+- Não use o prefixo VITE_ para credenciais do servidor.
+- Mantenha apenas .env.example versionado, com valores fictícios.
+- Senhas de usuários são armazenadas como hashes com salt; sessões usam cookies HttpOnly.
+- Utilize um banco separado para testes e faça backup antes de transferir dados.
+- Credenciais expostas devem ser substituídas no provedor e nos ambientes que as utilizam.
+
+## Cloudflare Workers
+
+A configuração de build está em vite.config.ts e wrangler.jsonc.
+
+1. Configure DATABASE_URL como Secret em Settings → Runtime variables and secrets → Production do Worker.
+2. A variável precisa estar disponível na execução, não apenas na seção Builds.
+3. Gere e publique a aplicação:
+
+~~~sh
+bun run build
+bun run deploy
+~~~
+
+O deploy por CLI exige autenticação no Cloudflare. Quando houver integração com o GitHub, confira no painel a branch e os comandos de build e publicação.
+
+O build gera dist/client e dist/server. Não versione esses diretórios nem copie credenciais para wrangler.jsonc. A estrutura do banco deve estar provisionada antes do uso; o Worker não cria tabelas durante o login.
+
+Para testar o build no runtime Cloudflare:
+
+~~~sh
+bun run preview -- --host 127.0.0.1 --port 4174
+bun run test:worker
+node scripts/check-worker-session.mjs
+~~~
+
+O teste de sessão realiza três chamadas anônimas e três com cookie fictício. As chamadas com cookie consultam o banco configurado sem criar sessões.
+
+Consulte [a documentação de deploy](.next/CLOUDFLARE.md) para detalhes.
+
+## Administração e persistência
+
+Usuários, permissões, livros e histórico são persistidos no Neon em produção. A permissão administrativa não é concedida automaticamente durante o cadastro público.
+
+Os utilitários de banco ficam em .next/scripts. Antes de executar uma operação administrativa, confira o banco de destino e utilize uma conta já cadastrada. Consulte [a documentação do backend](.next/README.md) e [as orientações de transferência para o Neon](.next/NEON.md). As instruções antigas de hospedagem nesse último documento não substituem o procedimento Cloudflare deste README.
+
+Não execute migrações como parte do build ou para corrigir erros de login.
+
+## Validação
+
+~~~sh
 bun test tests
 bun run typecheck
 bun run build
-bun run start
-```
+~~~
 
-A versão compilada utiliza um servidor Node.js. A porta padrão é 3000;
-configure PORT e HOST conforme necessário.
+Testes adicionais do backend Node:
 
-O aplicativo usa SQLite para usuários, sessões, livros, estoque, empréstimos e
-histórico. Os dados ficam em `.next/database/data/library.sqlite` e sobrevivem à
-reinicialização. O Supabase permanece desativado.
+~~~sh
+bun run build:node
+bun run test:backend
+~~~
 
-Para liberar um administrador, execute `node .next/scripts/admin.mjs TELEFONE_COM_DDD`.
-Entre com o telefone autorizado e abra **Perfil → Gerenciar livros e estoque**.
+Verificação de conexão no runtime Workers:
 
-Depois de compilar, execute `bun run test:backend` para validar a persistência
-e a integração HTTP. Consulte [.next/README.md](.next/README.md) para configuração
-e backup. Contas antigas da simulação precisam ser cadastradas uma vez no backend.
+~~~sh
+bun run test:worker-db
+~~~
+
+Essa verificação usa o banco indicado em .env.local, testa consultas sequenciais e concorrentes e o timeout de uma consulta de leitura. Não altera registros.
+
+## Diagnóstico
+
+| Sintoma | Verificação |
+| --- | --- |
+| DATABASE_URL_MISSING | Confirme o nome e a presença do segredo nas variáveis de runtime do Worker publicado. |
+| DATABASE_OPERATION_FAILED | Consulte os logs do Worker para localizar a etapa de conexão ou consulta que falhou. |
+| Login retorna erro genérico | Verifique os logs de autenticação; a mensagem não significa necessariamente senha incorreta. |
+| Administração não aparece | Confirme a permissão da conta e entre novamente. |
+| Alteração não aparece no site | Confira o commit e o resultado do deploy no Cloudflare. |
+
+Ao compartilhar logs, remova cookies, tokens, senhas, conexões e dados pessoais.
