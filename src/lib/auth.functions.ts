@@ -3,6 +3,14 @@ import { z } from "zod";
 import { normalizePhone } from "./auth";
 import { getAuthStore } from "../../.next/src/database/stores.server";
 import { currentUser, startSession, endSession } from "../../.next/src/auth/session.server";
+import { traceStage } from "./server-diagnostics.server";
+
+function logAccessFailure(operation: string, error: unknown) {
+  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+  // Only known-safe identifiers; raw errors may include credentials or personal data.
+  const safeCode = /^[A-Z0-9_]{2,40}$/.test(code) ? code : error instanceof Error && error.message === "DATABASE_URL_MISSING" ? "DATABASE_URL_MISSING" : "ACCESS_SERVICE_FAILURE";
+  console.error(`[auth:${operation}] ${safeCode}`);
+}
 
 const phone = z.string().max(22).transform((value, ctx) => {
   try { return normalizePhone(value); }
@@ -18,6 +26,7 @@ export const registerUser = createServerFn({ method: "POST" }).validator(signup)
     await startSession(user.id);
     return { ok: true as const, user };
   } catch (error) {
+    if (!(error instanceof Error && error.message.startsWith("Este telefone"))) logAccessFailure("register", error);
     return { ok: false as const, message: error instanceof Error && error.message.startsWith("Este telefone") ? error.message : "Não foi possível salvar o cadastro. Tente novamente." };
   }
 });
@@ -28,8 +37,9 @@ export const loginUser = createServerFn({ method: "POST" }).validator(credential
     return { ok: true as const, user };
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
+    if (!/^(Telefone ou senha|Muitas tentativas)/.test(message)) logAccessFailure("login", error);
     return { ok: false as const, message: /^(Telefone ou senha|Muitas tentativas)/.test(message) ? message : "Não foi possível entrar. Tente novamente." };
   }
 });
-export const readSession = createServerFn({ method: "GET" }).handler(() => currentUser());
+export const readSession = createServerFn({ method: "GET" }).handler(() => traceStage("readSession", currentUser, 25_000));
 export const logoutUser = createServerFn({ method: "POST" }).handler(async () => { await endSession(); return { ok: true }; });

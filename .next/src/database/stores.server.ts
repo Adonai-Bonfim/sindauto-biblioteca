@@ -1,9 +1,20 @@
 import { postgresDatabase, initializeDatabase } from "./postgres.server.ts";
 import { PostgresAuthStore } from "../auth/postgres.server.ts";
 import { PostgresLibraryStore } from "../books/postgres.server.ts";
+import { isCloudflareWorker } from "./runtime.server.ts";
 
 let online: Promise<{ auth: PostgresAuthStore; library: PostgresLibraryStore }> | undefined;
+let workerStores: { auth: PostgresAuthStore; library: PostgresLibraryStore } | undefined;
 async function onlineStores() {
+  if (isCloudflareWorker()) {
+    // No cross-request initialization promise or schema writes in Workers.
+    // Provision the schema with db:check before deploying.
+    if (!workerStores) {
+      const connection = postgresDatabase(process.env["DATABASE_URL"]!);
+      workerStores = { auth: new PostgresAuthStore(connection.database), library: new PostgresLibraryStore(connection.database) };
+    }
+    return workerStores;
+  }
   if (!online) {
     const connection = postgresDatabase(process.env["DATABASE_URL"]!);
     online = initializeDatabase(connection.database).then(() => ({
@@ -14,7 +25,7 @@ async function onlineStores() {
 }
 function usesNeon() {
   if (process.env["DATABASE_URL"]) return true;
-  if (process.env["VERCEL"]) throw new Error("Configure DATABASE_URL para habilitar o banco de dados na Vercel.");
+  if (process.env["VERCEL"] || isCloudflareWorker()) throw new Error("DATABASE_URL_MISSING");
   return false;
 }
 export async function getAuthStore() {

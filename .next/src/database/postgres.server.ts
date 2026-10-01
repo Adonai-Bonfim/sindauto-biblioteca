@@ -1,4 +1,6 @@
 import { Pool } from "pg";
+import { isCloudflareWorker } from "./runtime.server.ts";
+import { traceStage } from "../../../src/lib/server-diagnostics.server";
 
 export interface SqlClient {
   query(sql: string, values?: unknown[]): Promise<{ rows: any[] }>;
@@ -8,13 +10,39 @@ export interface SqlDatabase extends SqlClient {
 }
 
 export function postgresDatabase(connectionString: string) {
-  const pool = new Pool({ connectionString, max: 3, idleTimeoutMillis: 10_000, connectionTimeoutMillis: 15_000, allowExitOnIdle: true });
-  // Never log the connection string or query parameters (they may contain credentials).
-  pool.on("error", () => console.error("Conexão PostgreSQL interrompida."));
+  const createPool = () => {
+    const pool = new Pool({ connectionString, max: 3, idleTimeoutMillis: 10_000, connectionTimeoutMillis: 5_000, query_timeout: 5_000, statement_timeout: 5_000, allowExitOnIdle: true });
+    // Never log connection strings, query parameters, or raw database errors.
+    pool.on("error", () => console.error("Conexão PostgreSQL interrompida."));
+    return pool;
+  };
+  // Worker sockets belong to the request that opened them. Never reuse them
+  // across requests; Neon provides pooling on its own pooled endpoint.
+  const sharedPool = isCloudflareWorker() ? undefined : createPool();
+  async function withPool<T>(work: (pool: Pool) => Promise<T>): Promise<T> {
+    const pool = sharedPool ?? createPool();
+    try { return await work(pool); }
+    finally { if (!sharedPool) await traceStage("db.pool.end", () => pool.end(), 2_000); }
+  }
+  async function withClient<T>(work: (client: SqlClient) => Promise<T>): Promise<T> {
+    return withPool(async pool => {
+      let expired = false;
+      const pending = pool.connect().then(client => {
+        if (expired) { client.release(true); throw new Error("DATABASE_OPERATION_TIMEOUT"); }
+        return client;
+      });
+      const client = await traceStage("db.pool.connect", () => pending, 6_000).catch(error => { expired = true; throw error; });
+      let failed = false;
+      const traced: SqlClient = { query: (sql, values) => traceStage("db.query", () => client.query(sql, values), 6_000) };
+      try { return await work(traced); }
+      catch (error) { failed = true; throw error; }
+      finally { client.release(failed); }
+    });
+  }
   const database: SqlDatabase = {
-    query: (sql, values) => pool.query(sql, values),
+    query: (sql, values) => withClient(client => client.query(sql, values)),
     async transaction(work) {
-      const client = await pool.connect();
+      return withClient(async client => {
       try {
         await client.query("BEGIN");
         // Serialize library writes across all serverless instances, including migrations.
@@ -23,10 +51,10 @@ export function postgresDatabase(connectionString: string) {
         await client.query("COMMIT");
         return result;
       } catch (error) { await client.query("ROLLBACK"); throw error; }
-      finally { client.release(); }
+      });
     },
   };
-  return { database, close: () => pool.end() };
+  return { database, close: async () => { await sharedPool?.end(); } };
 }
 
 export const schema = `

@@ -1,11 +1,15 @@
 import { getCookie, setCookie, deleteCookie, getRequest, setResponseHeader } from "@tanstack/react-start/server";
 import { getAuthStore } from "../database/stores.server";
+import { traceStage } from "../../../src/lib/server-diagnostics.server";
 const SESSION_SECONDS = 30 * 24 * 60 * 60;
 
 const COOKIE = "sindauto_session";
 export async function currentUser() {
   setResponseHeader("Cache-Control", "no-store");
-  return (await getAuthStore()).getUser(getCookie(COOKIE));
+  const token = getCookie(COOKIE);
+  if (!token) return null;
+  const store = await traceStage("session.store", getAuthStore);
+  return traceStage("session.getUser", () => store.getUser(token), 23_000);
 }
 export async function requireUser() {
   const user = await currentUser();

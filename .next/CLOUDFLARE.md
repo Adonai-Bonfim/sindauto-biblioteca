@@ -49,6 +49,25 @@ npm run test:worker
 O smoke test usa somente GET anônimo e verifica cinco rotas SSR e os assets,
 sem realizar operações no banco. Ele não testa login ou o Neon em produção.
 
+Para verificar a conexão com o Neon no runtime Workers, execute
+`npm run test:worker-db`. O teste usa DATABASE_URL de `.env.local`, executa
+consultas de leitura em requisições sequenciais e concorrentes, verifica o timeout
+com SELECT pg_sleep e testa a criptografia
+com uma senha fictícia. Não altera registros nem tenta entrar em contas reais.
+
+Conexões PostgreSQL não são compartilhadas entre requisições Workers: cada
+consulta/transação encerra seu pool. O pooling externo continua no Neon.
+No Workers, provisione as tabelas com `db:check` antes do deploy; não há criação
+de tabelas durante login. Configure `DATABASE_URL` como segredo do Worker e
+publique a versão com esse segredo; variáveis da Vercel não são transferidas.
+O log `DATABASE_URL_MISSING` indica ausência dessa configuração. Os logs de
+autenticação registram somente códigos, sem senha, conexão ou dados pessoais.
+
+Com o preview na porta 4174, `node scripts/check-worker-session.mjs` verifica
+a Server Function readSession três vezes sem cookie e três com cookie fictício,
+sem criar sessões. Os logs temporários mostram início, fim e duração de cada
+etapa, sem SQL ou parâmetros. Conexão e consultas têm limite de cinco segundos.
+
 O backend Node/SQLite continua disponível para os testes isolados existentes,
 por uma configuração separada que não participa do deploy Workers:
 
