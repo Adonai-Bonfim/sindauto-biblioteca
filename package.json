@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "start": "node .output/server/index.mjs",
+    "start": "vite preview",
     "typecheck": "tsc --noEmit",
     "test:backend": "node --test \".next/tests/*.test.mjs\"",
     "db:check": "node --env-file-if-exists=.env.local .next/scripts/neon.mjs check",
@@ -13,6 +13,9 @@
     "db:admin": "node --env-file-if-exists=.env.local .next/scripts/neon.mjs admin",
     "test": "bun test tests",
     "build": "vite build",
+    "build:node": "vite build --config vite.node.config.ts",
+    "deploy": "wrangler deploy",
+    "test:worker": "node scripts/check-worker.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -79,6 +82,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.62.3",
     "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^9.32.0",
     "@types/node": "^22.16.5",
@@ -96,6 +100,7 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "8.1.5"
+    "vite": "8.1.5",
+    "wrangler": "^4.145.0"
   }
 }
