@@ -1,6 +1,7 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
+import { allowFetchSite } from "./lib/csrf";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -22,6 +23,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 // from cross-site requests.
 const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
+  secFetchSite: (site, ctx) => allowFetchSite(site, ctx.request),
 });
 
 export const startInstance = createStart(() => ({
