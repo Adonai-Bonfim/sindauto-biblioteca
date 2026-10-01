@@ -23,6 +23,7 @@ export function createLoanStore() {
     },
     change(userId: string, action: "borrow" | "renew" | "return", id: string, now = new Date()) {
       if (action === "borrow") {
+        if (loans.some(loan => loan.userId === userId && loan.status !== "devolvido")) throw new Error("Você já possui um livro emprestado. Devolva-o antes de solicitar outro.");
         if (!bookIds.includes(id)) throw new Error("Livro não encontrado.");
         if (loans.some(loan => loan.bookId === id && loan.status !== "devolvido")) throw new Error("Este livro já foi emprestado. Confira a data de devolução no catálogo.");
         loans.unshift({ id: crypto.randomUUID(), bookId: id, userId, ...loanDates(now), status: "ativo", renewed: false });

@@ -117,6 +117,7 @@ export class LibraryStore {
   change(userId: string, action: "borrow" | "renew" | "return", id: string, now = new Date()) {
     this.transaction(() => {
       if (action === "borrow") {
+        if (this.db.prepare("SELECT id FROM loans WHERE user_id=? AND returned_at IS NULL LIMIT 1").get(userId)) throw new Error("Você já possui um livro emprestado. Devolva-o antes de solicitar outro.");
         const book = this.books().find(book => book.id === id);
         if (!book) throw new Error("Livro não encontrado.");
         if (book.availableCount < 1) throw new Error("Este livro está indisponível. Confira a previsão de devolução no catálogo.");

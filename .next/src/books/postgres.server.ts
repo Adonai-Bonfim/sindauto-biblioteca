@@ -83,6 +83,7 @@ export class PostgresLibraryStore {
   async change(userId: string, action: "borrow" | "renew" | "return", id: string, now = new Date()) {
     await this.db.transaction(async client => {
       if (action === "borrow") {
+        if ((await client.query("SELECT id FROM loans WHERE user_id=$1 AND returned_at IS NULL LIMIT 1", [userId])).rows.length) throw new Error("Você já possui um livro emprestado. Devolva-o antes de solicitar outro.");
         const book = (await this.books(false, client)).find(book => book.id === id);
         if (!book) throw new Error("Livro não encontrado.");
         if (book.availableCount < 1) throw new Error("Este livro está indisponível. Confira a previsão de devolução no catálogo.");
