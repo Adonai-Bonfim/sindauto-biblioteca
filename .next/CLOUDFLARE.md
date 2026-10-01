@@ -10,8 +10,8 @@ selecionada pelo TanStack, preservando o tratamento de erros existente.
 - Instalação: `bun install --frozen-lockfile`.
 - Build: `npm run build`.
 - Deploy: `npm run deploy` (executa `wrangler deploy`).
-- Worker: `adonai-bonfim-sindauto-biblioteca`, o nome gerado anteriormente pelo Nitro.
-  Se o Worker no painel tiver outro nome, alinhe o campo `name` antes do deploy.
+- Worker: `sindauto-biblioteca`, confirmado pelo endereço
+  `https://sindauto-biblioteca.adonaibonfimtr.workers.dev/`.
 - Saídas: `dist/client` e `dist/server`. O plugin gera a configuração de deploy
   em `.wrangler/deploy/config.json`, usada pelo Wrangler.
 - Preserve o segredo `DATABASE_URL` no Worker; não coloque credenciais no Wrangler.
